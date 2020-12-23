@@ -1,0 +1,13 @@
+{{- range $scheduledPolicy := .Values.scheduledPolicies }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ include "cloud-custodian-cron.fullname" $ }}-{{ $scheduledPolicy.name }}"
+  labels:
+   {{- include "cloud-custodian-cron.labels" $ | nindent 4 }}
+data:
+  policies.yaml: |-
+    policies:
+      {{- toYaml $scheduledPolicy.policies | nindent 4 }}
+{{- end }}

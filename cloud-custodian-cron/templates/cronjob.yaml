@@ -1,0 +1,65 @@
+{{- range $scheduledPolicy := .Values.scheduledPolicies }}
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "{{ include "cloud-custodian-cron.fullname" $ }}-{{ $scheduledPolicy.name }}"
+  labels:
+    {{- include "cloud-custodian-cron.labels" $ | nindent 4 }}
+spec:
+  concurrencyPolicy: {{ $scheduledPolicy.concurrencyPolicy }}
+  schedule: {{ $scheduledPolicy.schedule | quote }}
+  failedJobsHistoryLimit: {{ $scheduledPolicy.failedJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ $scheduledPolicy.successfulJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backOffLimit: 
+      template:
+        metadata:
+          {{- with $.Values.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          labels:
+            {{- include "cloud-custodian-cron.selectorLabels" $ | nindent 12 }}
+        spec:
+          volumes:
+          - name: policy
+            configMap:
+              name: "{{ include "cloud-custodian-cron.fullname" $ }}-{{ $scheduledPolicy.name }}"
+          {{- with $.Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ include "cloud-custodian-cron.serviceAccountName" $ }}
+          securityContext:
+            {{- toYaml $.Values.podSecurityContext | nindent 12 }}
+          containers:
+          - name: {{ $.Chart.Name }}
+            securityContext:
+              {{- toYaml $.Values.securityContext | nindent 14 }}
+            image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+            imagePullPolicy: {{ $.Values.image.pullPolicy }}
+            args: ["-v", "-s", "/home/custodian/policies.yml"]
+            {{- with $.Values.envVars }}
+            env:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            volumeMounts:
+            - name: policy
+              mountPath: /home/custodian
+            resources:
+              {{- toYaml $.Values.resources | nindent 14 }}
+          {{- with $.Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
