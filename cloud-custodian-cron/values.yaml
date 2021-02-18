@@ -1,0 +1,30 @@
+image:
+  repository: cloudcustodian/c7n
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "cloud-custodian"
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+scheduledPolicies: []
+
+resources: {}
+
+envVars: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
