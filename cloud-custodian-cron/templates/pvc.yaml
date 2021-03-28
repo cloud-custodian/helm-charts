@@ -1,0 +1,26 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "cloud-custodian-cron.fullname" . }}-data
+  labels:
+{{ include "cloud-custodian-cron.labels" . | indent 4 }}
+{{- if .Values.persistence.extraLabels }}
+{{- with .Values.persistence.extraLabels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- end }}
+{{- if .Values.persistence.annotations }}
+  annotations:
+{{ toYaml .Values.persistence.annotations | indent 4 }}
+{{- end }}
+spec:
+  accessModes:
+  - {{ default "ReadWriteOnce" .Values.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ default "5Gi" .Values.persistence.storageSize | quote }}
+{{- if .Values.persistence.storageClass }}
+  storageClassName: {{ .Values.persistence.storageClassName }}
+  {{- end }}
+{{- end }}

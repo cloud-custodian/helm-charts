@@ -3,7 +3,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: "{{ include "cloud-custodian-cron.fullname" $ }}-{{ $scheduledPolicy.name }}"
+  name: {{ include "cloud-custodian-cron.fullname" $ }}-{{ $scheduledPolicy.name }}
   labels:
     {{- include "cloud-custodian-cron.labels" $ | nindent 4 }}
 spec:
@@ -24,6 +24,18 @@ spec:
             {{- include "cloud-custodian-cron.selectorLabels" $ | nindent 12 }}
         spec:
           volumes:
+          {{- if $.Values.secret.enabled }}
+          - name: {{ template "cloud-custodian-cron.fullname" $ }}-secret
+            secret:
+              secretName: {{ $.Values.secret.secretName }}
+          {{- end }}
+          - name: {{ include "cloud-custodian-cron.fullname" $ }}-data
+          {{- if $.Values.persistence.enabled }}
+            persistentVolumeClaim:
+              claimName: {{ $.Values.persistence.existingClaim | default (printf "%s-%s" (include "cloud-custodian-cron.fullname" $ ) "data") }}
+          {{- else }}
+            emptyDir: {}
+          {{- end }}
           - name: policy
             configMap:
               name: "{{ include "cloud-custodian-cron.fullname" $ }}-{{ $scheduledPolicy.name }}"
@@ -40,14 +52,25 @@ spec:
               {{- toYaml $.Values.securityContext | nindent 14 }}
             image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
             imagePullPolicy: {{ $.Values.image.pullPolicy }}
-            args: ["-v", "-s", "/home/custodian/policies.yml"]
+            args:
+            {{- range $.Values.args }}
+            - {{ . | quote }}
+            {{- end }}
             {{- with $.Values.envVars }}
             env:
               {{- toYaml . | nindent 14 }}
             {{- end }}
             volumeMounts:
             - name: policy
+              mountPath: /home/custodian/policies.yaml
+              subPath: policies.yaml
+            - name: {{ include "cloud-custodian-cron.fullname" $ }}-data
               mountPath: /home/custodian
+            {{- if $.Values.secret.enabled }}
+            - mountPath: {{ default "/home/custodian/.aws" $.Values.secret.mountPath }}
+              name: {{ template "cloud-custodian-cron.fullname" $ }}-secret
+              readOnly: {{ default "true" $.Values.secret.readOnly }}
+            {{- end }}
             resources:
               {{- toYaml $.Values.resources | nindent 14 }}
           {{- with $.Values.nodeSelector }}
@@ -62,4 +85,5 @@ spec:
           tolerations:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          restartPolicy: {{ $.Values.restartPolicy | default "Never" | quote }}
 {{- end }}
