@@ -11,6 +11,7 @@ Cloud Custodian helm chart allowing use of cron jobs to schedule policy runs
 | affinity | object | `{}` | Optional affinity rules |
 | nodeSelector | object | `{}` | Optional node selector rules |
 | tolerations | list | `[]` | Optional tolerations to apply to the pod |
+| restartPolicy | string| `Never` | restartPolicy of CronJob |
 | podAnnotations | object | `{}` | Optional pod annotations |
 | fullnameOverride | string | `""` |  |
 | nameOverride | string | `""` |  |
@@ -21,6 +22,7 @@ Cloud Custodian helm chart allowing use of cron jobs to schedule policy runs
 | image.repository | string | `"cloudcustodian/c7n"` |  |
 | imagePullSecrets | list | `[]` |  |
 | envVars | object | `{}` | Extra environment variables to pass to cloud custodian  |
+| args | list | `[ "run","-v","-s","/home/custodian/output","/home/custodian/policies.yaml" ]` | Default custodian args  |  
 | resources | object | `{}` | Optional resources requests/limits |
 | scheduledPolicies[].concurrencyPolicy | object | `{}` |  The cron job's concurrency policy |
 | scheduledPolicies[].failedJobsHistoryLimit | int | `10` | Limit of how many failed jobs history to keep  |
@@ -30,3 +32,14 @@ Cloud Custodian helm chart allowing use of cron jobs to schedule policy runs
 | scheduledPolicies[].successfulJobsHistoryLimit | int | `10` | Limit of how many failed jobs history to keep |
 | securityContext | object | `{}` |  |
 | serviceAccount.annotations | object | `{}` | Optional service account annotations |
+| persistence.enabled | bool | `false` | Persistence volume to save output & cache |
+| persistence.extraLabels | object | `{}` | Persistence volume extra labels |
+| persistence.annotations | object | `{}` | Persistence annotations |
+| persistence.existingClaim | string | `""` | Persistence existingClaim volume |
+| persistence.accessMode | string | `""` | Persistence volume accessMode |
+| persistence.storageSize | string | `5Gi` | Persistence volume storageSize |
+| persistence.storageClassName | string | `""` | Persistence storageClassName |
+| secret.enabled | bool | `false` | Use external secret for custodian instead of using Envars as secrets |
+| secret.secretName | string | `""` | secretName for custodian  |
+| secret.mountPath | string | `/home/custodian/.aws` | secretName for custodian  |
+| secret.readOnly | string | `true` | secretName readOnly |
