@@ -56,4 +56,27 @@ scheduledPolicies:
      - type: mark-for-op
        op: stop
        days: 4
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "cloud-custodian"
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+scheduledPolicies: []
+
+resources: {}
+
+envVars: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
           
