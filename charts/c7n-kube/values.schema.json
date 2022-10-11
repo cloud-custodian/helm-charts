@@ -1,0 +1,173 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "global": {},
+        "certManager": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "certificate": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "create": {
+                            "type": "boolean"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "secretName": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "issuer": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "create": {
+                            "type": "boolean"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "enabled"
+            ]
+        },
+        "controller": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "annotations": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "create": {
+                    "type": "boolean"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "onException": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "replicas": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pod": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "annotations": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "labels": {
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "policies": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "configMap": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "policies": {
+                            "type": "array"
+                        }
+                    }
+                },
+                "source": {
+                    "type": "string",
+                    "enum": ["configMap", "volume"]
+                },
+                "volume": {
+                    "type": "object"
+                },
+                "volumeMount": {
+                    "type": "object"
+                }
+            }
+        },
+        "service": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "create": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                }
+            }
+        },
+        "webhook": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "caBundle": {
+                    "type": "string"
+                },
+                "create": {
+                    "type": "boolean"
+                },
+                "failurePolicy": {
+                    "type": "string"
+                },
+                "matchPolicy": {
+                    "type": "string"
+                },
+                "namespaceSelector": {
+                    "type": "object"
+                },
+                "objectSelector": {
+                    "type": "object"
+                },
+                "rules": {
+                    "type": "array"
+                }
+            }
+        }
+    }
+}

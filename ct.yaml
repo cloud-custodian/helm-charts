@@ -1,0 +1,4 @@
+chart-dirs: .
+remote: origin
+target-branch: main
+validate-maintainers: false

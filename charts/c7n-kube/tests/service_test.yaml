@@ -1,0 +1,76 @@
+suite: service tests
+
+templates: [service.yaml]
+values: [../ci/certmanager-raw-policies-values.yaml]
+
+tests:
+  - it: has sane defaults
+    asserts:
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME
+      - equal:
+          path: metadata.labels
+          value:
+            app.kubernetes.io/component: AdmissionController
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: c7n_kube.app_name
+            app.kubernetes.io/part-of: c7n
+            app.kubernetes.io/version: 0.1.0
+            helm.sh/chart: c7n-kube-0.1.0
+      - equal:
+          path: spec.selector
+          value:
+            app: c7n_kube
+            app.kubernetes.io/component: AdmissionController
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: c7n_kube.app_name
+            app.kubernetes.io/part-of: c7n
+            app.kubernetes.io/version: 0.1.0
+            helm.sh/chart: c7n-kube-0.1.0
+      - equal:
+          path: spec.ports[0].port
+          value: 8443
+  - it: can customize the service name
+    set:
+      service:
+        name: "super-{{ .Release.Name }}-service"
+    asserts:
+      - equal:
+          path: metadata.name
+          value: super-RELEASE-NAME-service
+  - it: can customize selector with template
+    set:
+      pod:
+        labels:
+          "app-{{ .Chart.Version }}": "super-{{ .Release.Name }}-app"
+    asserts:
+      - equal:
+          path: spec.selector
+          value:
+            app: c7n_kube
+            app-0.1.0: super-RELEASE-NAME-app
+            app.kubernetes.io/component: AdmissionController
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: c7n_kube.app_name
+            app.kubernetes.io/part-of: c7n
+            app.kubernetes.io/version: 0.1.0
+            helm.sh/chart: c7n-kube-0.1.0
+  - it: can customize port number
+    set:
+      service:
+        port: 12345
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 12345
+  - it: can disable creation
+    set:
+      service:
+        create: false
+    asserts:
+      - hasDocuments:
+          count: 0

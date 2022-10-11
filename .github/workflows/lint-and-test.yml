@@ -1,0 +1,85 @@
+name: Lint and Test Charts
+
+on: pull_request
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/helmpack/chart-testing:v3.7.1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Run chart-testing (lint)
+        run: |
+          #!/usr/bin/env bash
+
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+
+          ct lint
+
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: alpine/helm:3.10.0
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: run tests
+        run: |
+          #!/usr/bin/env bash
+          helm plugin install https://github.com/quintush/helm-unittest
+
+          for f in *; do
+              if [ ! -d "$f" ]; then
+                  continue
+              fi
+
+              helm unittest --helm3 "$f"
+          done
+
+  verify-generated-code:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: generate code
+        run: |
+          #!/usr/bin/env bash
+
+          set -e
+
+          # install dependencies
+          apt update && apt install git wget -y
+
+          # install helm-docs
+          HELM_DOCS_VERSION=1.11.0
+          HELM_DOCS_URL=https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz
+          HELM_DOCS_DIR=/tmp
+          HELM_DOCS_PKG=${HELM_DOCS_DIR}/helm-docs.tgz
+          HELM_DOCS_BIN=${HELM_DOCS_DIR}/helm-docs
+          mkdir -p ${HELM_DOCS_DIR}
+          echo ${HELM_DOCS_URL}
+          wget ${HELM_DOCS_URL} --output-document ${HELM_DOCS_PKG}
+          tar --extract --verbose --file ${HELM_DOCS_PKG} --directory ${HELM_DOCS_DIR}
+
+          # regenerate helm docs
+          ${HELM_DOCS_BIN}
+
+          # verify that files have not changed
+          if ! git diff --exit-code; then
+            echo "generated files are not up to date; please regenerate all code and commit the changes"
+            exit 1
+          fi

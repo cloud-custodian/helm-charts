@@ -13,7 +13,7 @@ spec:
   successfulJobsHistoryLimit: {{ $scheduledPolicy.successfulJobsHistoryLimit }}
   jobTemplate:
     spec:
-      backOffLimit: 
+      backOffLimit:
       template:
         metadata:
           {{- with $.Values.podAnnotations }}
@@ -85,5 +85,5 @@ spec:
           tolerations:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          restartPolicy: {{ $.Values.restartPolicy | default "Never" | quote }}
+          restartPolicy: {{ $.Values.restartPolicy | quote }}
 {{- end }}

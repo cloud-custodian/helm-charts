@@ -1,0 +1,84 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+# Configuration
+
+There are two major decisions to be made: how to manage the webhook certificate, and where to put your policies.
+
+## Webhook certificate
+
+### cert-manager
+
+If you have cert-manager installed in your cluster, you can configure the helm chart to take care of this for you.
+The following values will create a self-signed issuer and a certificate, configure the pod to use it, and configure
+the bundle on the webhook.
+
+```
+certManager:
+  enabled: yes
+  issuer:
+    create: yes
+  certificate:
+    create: yes
+```
+
+### manual sync
+
+If you don't have or want cert-manager, you can manage this yourself.
+
+1. Generate a secret containing your certificate.
+```
+kubectl create secret tls your-secret-name \
+  --namespace=your-namespace \
+  --cert=tls.crt \
+  --key=tls.key
+```
+
+2. Configure the resource
+```
+certmanager
+  enabled: no
+  certificate:
+    create: no
+    secretName: your-secret-name
+```
+
+## Policies
+
+Two options for getting your policies into c7n-kube: use helm to create the ConfigMap, or manage the volume yourself.
+
+### Use Helm to manage it
+
+```
+policies:
+  source: configMap
+  configMap:
+    policies:
+      - hello: world
+```
+
+### Create a volume yourself
+
+```
+policies:
+  source: volume
+  volume:
+    configMap:
+      name: a-config-map
+  volumeMount:
+    readOnly: true
+```
+
+{{ template "chart.valuesSection" . }}

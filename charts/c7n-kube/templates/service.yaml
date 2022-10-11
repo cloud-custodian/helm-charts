@@ -1,0 +1,17 @@
+{{- if .Values.service.create }}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ tpl .Values.service.name . }}
+  labels:
+    {{ include "c7n-kube.common-labels" . | nindent 4 }}
+spec:
+  selector: {{ include "c7n-kube.pod-match-labels" . | nindent 4 }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: http
+
+{{- end }}

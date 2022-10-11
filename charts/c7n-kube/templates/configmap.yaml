@@ -1,0 +1,15 @@
+{{- if eq .Values.policies.source "configMap" }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ tpl .Values.policies.configMap.name . }}
+  labels: {{ include "c7n-kube.common-labels" . | nindent 4 }}
+data:
+  policies.yaml: |
+    policies:
+    {{- range .Values.policies.configMap.policies }}
+      - {{ toYaml . | nindent 8 }}
+    {{- end }}
+
+{{- end }}

@@ -1,0 +1,76 @@
+image:
+  repository: cloudcustodian/c7n
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Determines whether a service account is created
+  create: true
+  # -- Optional service account annotations
+  annotations: {}
+  # -- The service account name to use
+  name: "cloud-custodian"
+
+# -- Optional pod annotations
+podAnnotations: {}
+
+# -- Optional pod security context
+podSecurityContext: {}
+
+securityContext: {}
+
+scheduledPolicies: []
+
+# -- Optional resources requests/limits
+resources: {}
+
+# -- restartPolicy of CronJob
+restartPolicy: Never
+
+# -- Extra environment variables to pass to cloud custodian
+envVars: {}
+
+# -- Optional node selector rules
+nodeSelector: {}
+
+# -- Optional tolerations to apply to the pod
+tolerations: []
+
+# -- Optional affinity rules
+affinity: {}
+
+# -- Default custodian args
+args:
+- "run"
+- "-v"
+- "-s /home/custodian/output"
+- "/home/custodian/policies.yaml"
+
+persistence:
+  # -- Persistence volume to save output & cache
+  enabled: false
+  # -- Persistence volume extra labels
+  extraLabels: {}
+  # -- Persistence annotations
+  annotations: {}
+  # -- Persistence existingClaim volume
+  existingClaim: ""
+  # -- Persistence volume accessMode
+  accessMode: ""
+  # -- Persistence volume storageSize
+  storageSize: "5Gi"
+  # -- Persistence storageClassName
+  storageClassName: ""
+
+secret:
+  # -- Use external secret for custodian instead of using Envars as secrets
+  enabled: false
+  # -- secretName for custodian
+  secretName: ""
+  # -- secretName for custodian
+  mountPath: /home/custodian/.aws
+  # -- secretName readOnly
+  readOnly: true

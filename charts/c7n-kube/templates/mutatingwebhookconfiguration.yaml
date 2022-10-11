@@ -1,0 +1,43 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: c7n-admission
+  annotations:
+    {{- if .Values.certManager.enabled }}
+    cert-manager.io/inject-ca-from: {{ .Release.Namespace }}/{{ tpl .Values.certManager.certificate.name . }}
+    {{- end }}
+  labels:
+    {{ include "c7n-kube.common-labels" . | nindent 4 }}
+webhooks:
+- name: admission.cloudcustodian.io
+
+  admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+{{- if not .Values.certManager.enabled }}
+    caBundle: {{ required "A cluster without cert-manager must statically assign a caBundle" .Values.webhook.caBundle }}
+{{- end }}
+    service:
+      namespace: {{ .Release.Namespace }}
+      name: {{ tpl .Values.service.name . }}
+      path: /mutate
+      port: {{ .Values.controller.port }}
+  sideEffects: None
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+
+  {{- with .Values.webhook.matchPolicy }}
+  matchPolicy: {{ toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.webhook.namespaceSelector }}
+  namespaceSelector: {{ toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.webhook.objectSelector }}
+  objectSelector: {{ toYaml . | nindent 4 }}
+  {{- end }}
+
+  {{- with .Values.webhook.rules }}
+  rules: {{ toYaml . | nindent 6 }}
+  {{- end }}

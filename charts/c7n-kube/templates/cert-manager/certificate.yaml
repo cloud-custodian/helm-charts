@@ -1,0 +1,16 @@
+{{- if and .Values.certManager.enabled .Values.certManager.certificate.create }}
+
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ tpl .Values.certManager.certificate.name . }}
+  labels:
+    {{ include "c7n-kube.common-labels" . | nindent 4 }}
+spec:
+  secretName: {{ tpl .Values.certManager.certificate.secretName . }}
+  dnsNames:
+  - {{ tpl .Values.service.name . }}.{{ .Release.Namespace }}.svc
+  issuerRef:
+    name: {{ tpl .Values.certManager.issuer.name . }}
+
+{{- end }}

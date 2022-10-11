@@ -1,0 +1,112 @@
+suite: controller tests
+
+templates: [controller.yaml]
+values: [../ci/certmanager-raw-policies-values.yaml]
+
+tests:
+  - it: has sane defaults
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME
+      - isNull:
+          path: metadata.annotations
+      - equal:
+          path: metadata.labels
+          value:
+            app.kubernetes.io/component: AdmissionController
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: c7n_kube.app_name
+            app.kubernetes.io/part-of: c7n
+            app.kubernetes.io/version: 0.1.0
+            helm.sh/chart: c7n-kube-0.1.0
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app: c7n_kube
+            app.kubernetes.io/component: AdmissionController
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: c7n_kube.app_name
+            app.kubernetes.io/part-of: c7n
+            app.kubernetes.io/version: 0.1.0
+            helm.sh/chart: c7n-kube-0.1.0
+      - equal:
+          path: spec.template.metadata.name
+          value: RELEASE-NAME
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            app: c7n_kube
+            app.kubernetes.io/component: AdmissionController
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: c7n_kube.app_name
+            app.kubernetes.io/part-of: c7n
+            app.kubernetes.io/version: 0.1.0
+            helm.sh/chart: c7n-kube-0.1.0
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: cloudcustodian/c7n-kube:latest
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value:
+            - --port=8443
+            - --policy-dir=/policies
+            - --on-exception=warn
+            - --endpoint=/mutation
+            - --cert=/cert/tls.crt
+            - --ca-cert=/cert/ca.crt
+            - --cert-key=/cert/tls.key
+      - equal:
+          path: spec.template.spec.containers[0].ports[0]
+          value:
+            name: http
+            containerPort: 8443
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts
+          value:
+            - mountPath: /policies
+              name: policies
+            - mountPath: /cert
+              name: certificate
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: certificate
+              secret:
+                secretName: RELEASE-NAME-webhook
+            - configMap:
+                name: RELEASE-NAME-policies
+              name: policies
+  - it: can use a custom volume mount
+    set:
+      certManager:
+        enabled: false
+      policies:
+        source: volume
+        volume:
+          configMap:
+            name: a-config-map
+        volumeMount:
+          readOnly: true
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - configMap:
+                name: a-config-map
+              name: policies
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts
+          value:
+            - mountPath: /policies
+              name: policies
+              readOnly: true

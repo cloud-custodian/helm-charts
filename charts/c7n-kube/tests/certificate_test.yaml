@@ -1,0 +1,41 @@
+suite: certificate tests
+
+templates: [cert-manager/certificate.yaml]
+values: [../ci/certmanager-raw-policies-values.yaml]
+
+tests:
+  - it: can customize the certificate name
+    set:
+      certManager:
+        certificate:
+          name: "super-{{ .Release.Name }}-cert"
+    asserts:
+      - equal:
+          path: metadata.name
+          value: super-RELEASE-NAME-cert
+  - it: can customize the certificate secret name
+    set:
+      certManager:
+        certificate:
+          secretName: "super-{{ .Release.Name }}-secret"
+    asserts:
+      - equal:
+          path: spec.secretName
+          value: super-RELEASE-NAME-secret
+  - it: can customize the issuer name
+    set:
+      certManager:
+        issuer:
+          name: "super-{{ .Release.Name }}-issuer"
+    asserts:
+      - equal:
+          path: spec.issuerRef.name
+          value: super-RELEASE-NAME-issuer
+  - it: can disable cert creation
+    set:
+      certManager:
+        certificate:
+          create: false
+    asserts:
+      - hasDocuments:
+          count: 0

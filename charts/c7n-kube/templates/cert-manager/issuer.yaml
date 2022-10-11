@@ -1,0 +1,12 @@
+{{- if and .Values.certManager.enabled .Values.certManager.issuer.create }}
+
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ tpl .Values.certManager.issuer.name . }}
+  labels:
+    {{ include "c7n-kube.common-labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+
+{{- end }}
