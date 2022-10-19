@@ -1,0 +1,35 @@
+suite: configmap tests
+
+templates: [configmap.yaml]
+values: [../ci/certmanager-raw-policies-values.yaml]
+
+tests:
+  - it: can create a configmap
+    set:
+      policies:
+        source: configMap
+        configMap:
+          policies:
+            - hello: world
+              yes: no
+    asserts:
+      - equal:
+          path: data.policies\.yaml
+          value: |
+            policies:
+              -
+                hello: world
+                "true": false
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-policies
+      - equal:
+          path: metadata.labels
+          value:
+            app.kubernetes.io/component: AdmissionController
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: c7n_kube.app_name
+            app.kubernetes.io/part-of: c7n
+            app.kubernetes.io/version: 0.1.0
+            helm.sh/chart: c7n-kube-0.1.0

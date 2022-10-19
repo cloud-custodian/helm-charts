@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ tpl .Values.controller.name . }}
+{{- with .Values.controller.annotations }}
+  annotations:
+    {{ toYaml . | nindent 4 }}
+{{- end }}
+  labels:
+    {{ include "c7n-kube.common-labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.controller.replicas }}
+  selector:
+    matchLabels:
+      {{ include "c7n-kube.pod-match-labels" . | nindent 6 }}
+  template:
+    metadata:
+      name: {{ tpl .Values.pod.name . }}
+    {{- with .Values.pod.annotations }}
+      annotations:
+        {{ toYaml | nindent 8 }}
+    {{- end }}
+      labels:
+        {{ include "c7n-kube.pod-match-labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: web
+          image: "{{ .Values.controller.image }}"
+          command:
+            - c7n-kates
+          args:
+            - --port={{ .Values.controller.port }}
+            - --policy-dir=/policies
+            - --on-exception={{ .Values.controller.onException }}
+            - --endpoint=/mutation
+            {{- if .Values.certManager.enabled}}
+            - --cert=/cert/tls.crt
+            - --ca-cert=/cert/ca.crt
+            - --cert-key=/cert/tls.key
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.controller.port }}
+          volumeMounts:
+            - mountPath: /policies
+              name: policies
+          {{- if eq .Values.policies.source "volume" }}
+              {{ toYaml .Values.policies.volumeMount | nindent 14 }}
+          {{- end }}
+          {{- if .Values.certManager.enabled }}
+            - mountPath: /cert
+              name: certificate
+          {{- end }}
+
+      volumes:
+      {{- if .Values.certManager.enabled }}
+        - name: certificate
+          secret:
+            secretName: {{ tpl .Values.certManager.certificate.secretName . }}
+      {{- end }}
+        - name: policies
+      {{- if eq .Values.policies.source "configMap" }}
+          configMap:
+            name: {{ tpl .Values.policies.configMap.name . }}
+      {{- else }}
+          {{ toYaml .Values.policies.volume | nindent 10 }}
+      {{- end }}

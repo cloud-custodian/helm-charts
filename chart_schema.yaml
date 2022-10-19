@@ -1,0 +1,12 @@
+apiVersion: str()
+appVersion: str(required=False)
+description: str(required=False)
+maintainers: list(include('maintainer'), required=False)
+name: str()
+type: str(required=False)
+version: str()
+---
+maintainer:
+  name: str()
+  email: str(required=False)
+  url: str(required=False)

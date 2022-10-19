@@ -1,0 +1,16 @@
+policies:
+  source: volume
+  volume:
+    configMap:
+      name: a-config-map
+  volumeMount:
+    readOnly: true
+
+webhook:
+  caBundle: blahblahblah
+  rules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      operations: ["CREATE"]
+      resources: ["pods"]
+      scope: "Namespaced"

@@ -1,6 +1,0 @@
-apiVersion: v2
-name: cloud-custodian-cron
-description: Cloud Custodian helm chart allowing use of cron jobs to schedule policy runs 
-type: application
-version: 0.2.0
-appVersion: 0.9.11.0

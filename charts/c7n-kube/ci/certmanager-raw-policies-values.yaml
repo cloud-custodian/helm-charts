@@ -1,0 +1,11 @@
+certManager:
+  enabled: true
+  issuer:
+    create: true
+    name: "{{ .Release.Name }}-{{ .Chart.Name }}"
+
+policies:
+  source: configMap
+  configMap:
+    policies:
+      - hello: world
