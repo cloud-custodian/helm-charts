@@ -1,5 +1,5 @@
 apiVersion: v2
 name: c7n-kube
 description: Use c7n policies to warn/block kubernetes resource modifications.
-version: 0.1.0
-appVersion: 0.1.0
+version: 0.1.1
+appVersion: 0.1.1
