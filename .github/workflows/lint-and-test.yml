@@ -38,11 +38,12 @@ jobs:
           #!/usr/bin/env bash
           helm plugin install https://github.com/quintush/helm-unittest
 
-          for f in *; do
+          for f in charts/*; do
               if [ ! -d "$f" ]; then
                   continue
               fi
 
+              echo "Running test on $f"
               helm unittest --helm3 "$f"
           done
 
