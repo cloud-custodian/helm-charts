@@ -31,5 +31,5 @@ tests:
             app.kubernetes.io/managed-by: Helm
             app.kubernetes.io/name: c7n_kube.app_name
             app.kubernetes.io/part-of: c7n
-            app.kubernetes.io/version: 0.1.0
-            helm.sh/chart: c7n-kube-0.1.0
+            app.kubernetes.io/version: 0.1.2
+            helm.sh/chart: c7n-kube-0.1.2
