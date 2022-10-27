@@ -1,6 +1,6 @@
 # c7n-kube
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![AppVersion: 0.1.1](https://img.shields.io/badge/AppVersion-0.1.1-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![AppVersion: 0.1.2](https://img.shields.io/badge/AppVersion-0.1.2-informational?style=flat-square)
 
 Use c7n policies to warn/block kubernetes resource modifications.
 
@@ -84,7 +84,7 @@ policies:
 | certManager.issuer.name | string | `"{{ .Release.Name }}-issuer"` | The name of the created certificate Issuer |
 | controller.annotations | object | `{}` | Annotations to apply to the controller |
 | controller.create | bool | `true` | Create the controller that handles the webhook |
-| controller.image | string | `"cloudcustodian/c7n-kube:latest"` | The name of the image to use |
+| controller.image | string | `"cloudcustodian/c7n:latest"` | The name of the image to use |
 | controller.name | string | `"{{ .Release.Name }}"` | The name of the controller |
 | controller.onException | string | `"warn"` | The action to take when the request results in an error |
 | controller.port | int | `8443` | The port the deployment should listen on |

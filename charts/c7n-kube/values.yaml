@@ -27,7 +27,7 @@ controller:
   create: true
 
   # -- The name of the image to use
-  image: cloudcustodian/c7n-kube:latest
+  image: cloudcustodian/c7n:latest
 
   # -- The name of the controller
   name: "{{ .Release.Name }}"
