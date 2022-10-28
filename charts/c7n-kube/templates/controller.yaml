@@ -21,7 +21,7 @@ spec:
         {{ toYaml | nindent 8 }}
     {{- end }}
       labels:
-        {{ include "c7n-kube.pod-match-labels" . | nindent 8 }}
+        {{ include "c7n-kube.common-labels" . | nindent 8 }}
     spec:
       containers:
         - name: web
