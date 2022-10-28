@@ -29,6 +29,7 @@ spec:
           command:
             - c7n-kates
           args:
+            - --host=0.0.0.0
             - --port={{ .Values.controller.port }}
             - --policy-dir=/policies
             - --on-exception={{ .Values.controller.onException }}
