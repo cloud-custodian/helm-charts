@@ -2,6 +2,15 @@ apiVersion: v1
 entries:
   c7n-kube:
   - apiVersion: v2
+    appVersion: 0.1.2
+    created: "2022-10-28T10:09:37.369686508Z"
+    description: Use c7n policies to warn/block kubernetes resource modifications.
+    digest: 90eba56e6fd4dc70086faec9f6aed8039a13b84173d4143177d2315300b31c48
+    name: c7n-kube
+    urls:
+    - https://github.com/cloud-custodian/helm-charts/releases/download/c7n-kube-0.1.2/c7n-kube-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     appVersion: 0.1.1
     created: "2022-10-20T21:02:13.555579103Z"
     description: Use c7n policies to warn/block kubernetes resource modifications.
