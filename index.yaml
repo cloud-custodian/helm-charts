@@ -22,6 +22,16 @@ entries:
   cloud-custodian-cron:
   - apiVersion: v2
     appVersion: 0.9.11.0
+    created: "2023-11-29T00:28:06.722617761Z"
+    description: Cloud Custodian helm chart allowing use of cron jobs to schedule policy runs
+    digest: 6b21fcccc9584033214da2e4fdab45bbd31933710e9325e11d1534cfb270edf2
+    name: cloud-custodian-cron
+    type: application
+    urls:
+    - https://github.com/cloud-custodian/helm-charts/releases/download/cloud-custodian-cron-0.2.3/cloud-custodian-cron-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v2
+    appVersion: 0.9.11.0
     created: "2022-10-20T21:02:13.711215085Z"
     description: Cloud Custodian helm chart allowing use of cron jobs to schedule policy runs
     digest: a6b9a717ab8aee18980b2ef85b43bbccc2a04b23472e1849d52ce0b0c32cbe31
